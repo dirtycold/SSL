@@ -60,7 +60,16 @@ SSLWidget::SSLWidget(QWidget* parent)
 
         auto userItem = new QTreeWidgetItem({"User"});
         list->addTopLevelItem(userItem);
+        auto userFolder = QDir::home();
+        userFolder.cd(".shadowsocks");
+        static const QString userPath(userFolder.absolutePath());
 
+        auto userConfigList = findConfig(userPath);
+        for (const auto& key : userConfigList)
+        {
+            userItem->addChild(new QTreeWidgetItem({key.first}));
+        }
+        configList.insert(userConfigList.cbegin(), userConfigList.cend());
     };
     connect(reloadButton, &QToolButton::clicked, reload);
 
