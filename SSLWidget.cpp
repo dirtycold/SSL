@@ -19,6 +19,7 @@ SSLWidget::SSLWidget(QWidget* parent)
     static auto& controller = SSLController::instance();
 
     auto list = new QTreeWidget;
+    list->setAnimated(true);
     list->setHeaderLabel("Profiles");
 
     auto reloadButton = new QToolButton;
