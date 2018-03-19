@@ -55,8 +55,6 @@ SSLWidget::SSLWidget(QWidget* parent)
             systemItem->addChild(new QTreeWidgetItem({key.first}));
         }
         configList.insert(systemConfigList.cbegin(), systemConfigList.cend());
-
-        systemItem->setExpanded(true);
         systemItem->setFlags(Qt::ItemIsEnabled);
 
         auto userItem = new QTreeWidgetItem({"User"});
@@ -72,6 +70,8 @@ SSLWidget::SSLWidget(QWidget* parent)
         }
         configList.insert(userConfigList.cbegin(), userConfigList.cend());
         userItem->setFlags(Qt::ItemIsEnabled);
+
+        list->expandAll();
     };
     connect(reloadButton, &QToolButton::clicked, reload);
 
