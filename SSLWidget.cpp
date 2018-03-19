@@ -32,9 +32,6 @@ SSLWidget::SSLWidget(QWidget* parent)
         list->clear();
         configList.clear();
 
-        auto systemItem = new QTreeWidgetItem({"System"});
-        list->addTopLevelItem(systemItem);
-
         auto findConfig = [](const QString& folder)
         {
             ConfigMap map;
@@ -49,6 +46,8 @@ SSLWidget::SSLWidget(QWidget* parent)
             return map;
         };
 
+        auto systemItem = new QTreeWidgetItem({"System"});
+        list->addTopLevelItem(systemItem);
         static const QString systemPath ("/etc/shadowsocks");
         auto systemConfigList = findConfig(systemPath);
         for (const auto& key : systemConfigList)
