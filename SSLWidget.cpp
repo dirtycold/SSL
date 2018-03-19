@@ -8,6 +8,9 @@
 #include <QMap>
 #include <QDir>
 #include <QFileInfo>
+#include <QMenu>
+#include <QAction>
+#include <QSystemTrayIcon>
 
 #include "SSLController.h"
 
@@ -125,4 +128,41 @@ SSLWidget::SSLWidget(QWidget* parent)
 
     setLayout(layout);
     reload();
+
+    auto showAction = new QAction("Show window", this);
+    connect(showAction, &QAction::triggered, [this]()
+    {
+        showNormal();
+        setFocus();
+    });
+
+    auto quitAction = new QAction("Quit", this);
+    connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
+
+    auto menu = new QMenu(this);
+    menu->addAction(showAction);
+    menu->addAction(quitAction);
+
+    auto tray = new QSystemTrayIcon(this);
+    tray->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation)));
+    tray->setContextMenu(menu);
+    tray->show();
+}
+
+void SSLWidget::changeEvent(QEvent* event)
+{
+    switch(event->type()) {
+    case QEvent::WindowStateChange:
+    {
+        if(isMinimized())
+        {
+            hide();
+            event->ignore();
+        }
+        break;
+    }
+    default:
+        QWidget::changeEvent(event);
+        break;
+    }
 }

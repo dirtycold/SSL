@@ -8,4 +8,7 @@ class SSLWidget : public QWidget
 public:
     explicit SSLWidget(QWidget* parent = nullptr);
     ~SSLWidget() = default;
+
+protected:
+    void changeEvent(QEvent* event);
 };
