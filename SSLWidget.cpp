@@ -69,7 +69,7 @@ SSLWidget::SSLWidget(QWidget* parent)
     startButton->setText("Start");
     startButton->setCheckable(true);
 
-    auto start = [list, startButton](bool state)
+    auto start = [list, reloadButton, startButton](bool state)
     {
         auto item = list->currentItem();
         if(item == nullptr)
@@ -85,6 +85,9 @@ SSLWidget::SSLWidget(QWidget* parent)
         {
             controller.setConfig(value);
             controller.start();
+            item->setIcon(0, QIcon(QApplication::style()->standardIcon(QStyle::SP_DialogYesButton)));
+            list->setEnabled(false);
+            reloadButton->setEnabled(false);
             if(controller.started())
                 startButton->setText("Stop");
             else
@@ -93,6 +96,9 @@ SSLWidget::SSLWidget(QWidget* parent)
         else
         {
             controller.stop();
+            item->setIcon(0, QIcon());
+            list->setEnabled(true);
+            reloadButton->setEnabled(true);
             startButton->setText("Start");
         }
     };
