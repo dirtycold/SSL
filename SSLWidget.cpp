@@ -159,6 +159,11 @@ void SSLWidget::changeEvent(QEvent* event)
             hide();
             event->ignore();
         }
+        else
+        {
+            show();
+            event->accept();
+        }
         break;
     }
     default:
