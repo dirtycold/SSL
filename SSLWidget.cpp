@@ -99,11 +99,14 @@ SSLWidget::SSLWidget(QWidget* parent)
         {
             controller.setConfig(value);
             controller.start();
-            item->setIcon(0, QIcon(QApplication::style()->standardIcon(QStyle::SP_DialogYesButton)));
-            list->setEnabled(false);
-            reloadButton->setEnabled(false);
+
             if(controller.started())
+            {
+                item->setIcon(0, QIcon(QApplication::style()->standardIcon(QStyle::SP_DialogYesButton)));
+                list->setEnabled(false);
+                reloadButton->setEnabled(false);
                 startButton->setText("Stop");
+            }
             else
                 startButton->setChecked(false);
         }
@@ -119,10 +122,14 @@ SSLWidget::SSLWidget(QWidget* parent)
     connect(startButton, &QPushButton::clicked, start);
 
     auto buttonLayout  = new QHBoxLayout;
+    buttonLayout->setMargin(3);
+    buttonLayout->setSpacing(3);
     buttonLayout->addWidget(reloadButton);
     buttonLayout->addWidget(startButton);
 
     auto layout = new QVBoxLayout;
+    layout->setMargin(3);
+    layout->setSpacing(3);
     layout->addWidget(list);
     layout->addLayout(buttonLayout);
 
