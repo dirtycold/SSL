@@ -16,7 +16,7 @@ public:
 #elif defined(Q_OS_MACOS)
         auto systemPath = QString("/usr/local/etc/") + folder;
 #else
-        auto systemPath = QString("/usr/local/") + folder;
+        auto systemPath = QString("/etc/") + folder;
 #endif
         return systemPath;
     }
