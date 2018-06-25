@@ -4,6 +4,7 @@
 #include <QDir>
 
 static const QString folder = QStringLiteral("shadowsocks");
+static const QString program = QStringLiteral("ss-local");
 
 class SSLPathHelper
 {
@@ -25,5 +26,17 @@ public:
         auto userFolder = QDir::home();
         userFolder.cd("." + folder);
         return userFolder.absolutePath();
+    }
+
+    static QString executablePath()
+    {
+#if defined(Q_OS_WIN)
+        auto execPath = QString("");
+#elif defined(Q_OS_MACOS)
+        auto execPath = QString("/usr/local/bin/") + program;
+#else
+        auto execPath = QString("/usr/bin/") + program;
+#endif
+        return execPath;
     }
 };

@@ -1,6 +1,9 @@
 #include "SSLController.h"
 
 #include <QProcess>
+
+#include "SSLPathHelper.h"
+
 #include <QDebug>
 
 class SSLController::SSLControllerPrivate
@@ -13,7 +16,7 @@ class SSLController::SSLControllerPrivate
 SSLController::SSLController(QObject *parent)
     :QObject(parent), p(new SSLControllerPrivate)
 {
-    p->proc.setProgram("/usr/local/bin/ss-local");
+    p->proc.setProgram(SSLPathHelper::executablePath());
     p->proc.setProcessChannelMode(QProcess::ForwardedChannels);
 
     connect(&p->proc, &QProcess::stateChanged, [this](QProcess::ProcessState procState){
