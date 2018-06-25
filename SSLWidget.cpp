@@ -4,7 +4,6 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <QToolButton>
-#include <QStyle>
 #include <QApplication>
 #include <QMap>
 #include <QDir>
@@ -29,7 +28,7 @@ SSLWidget::SSLWidget(QWidget *parent)
 {
     auto listWidget = new QListWidget;
     auto reloadButton = new QToolButton;
-    reloadButton->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)));
+    reloadButton->setIcon(QIcon(":/icon/reload.svg"));
 
     typedef QMap<QString, QString> ConfigMap;
     static ConfigMap configMap;
