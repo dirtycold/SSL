@@ -1,6 +1,7 @@
 #include "SSLWidget.h"
-#include <QTreeWidget>
+
 #include <QLayout>
+#include <QListWidget>
 #include <QPushButton>
 #include <QToolButton>
 #include <QStyle>
@@ -13,69 +14,49 @@
 #include <QSystemTrayIcon>
 
 #include "SSLController.h"
+#include "SSLPathHelper.h"
 
 #include <QDebug>
 
-SSLWidget::SSLWidget(QWidget* parent)
-    : QWidget(parent)
+class SSLWidget::SSLWidgetPrivate
 {
-    static auto& controller = SSLController::instance();
+    friend class SSLWidget;
+    SSLController controller;
+};
 
-    auto list = new QTreeWidget;
-    list->setAnimated(true);
-    list->setHeaderLabel("Profiles");
-
+SSLWidget::SSLWidget(QWidget *parent)
+    :QWidget(parent), p(new SSLWidgetPrivate)
+{
+    auto listWidget = new QListWidget;
     auto reloadButton = new QToolButton;
     reloadButton->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)));
 
-    typedef std::map<QString, QString> ConfigMap;
-    static ConfigMap configList;
+    typedef QMap<QString, QString> ConfigMap;
+    static ConfigMap configMap;
 
-    auto reload = [list]()
+    auto reload = [listWidget]()
     {
-        list->clear();
-        configList.clear();
+        listWidget->clear();
+        configMap.clear();
 
-        auto findConfig = [](const QString& folder)
+        auto findConfig = [](const QString& folder, const QString& comment = QString())
         {
             ConfigMap map;
             QDir dir(folder);
             const auto infoList = dir.entryInfoList({"*.json"}, QDir::Filter::Files, QDir::SortFlag::Name);
-
-            for(const auto& info : infoList)
+            for (const auto& info : infoList)
             {
-                map.insert({info.baseName(), info.absoluteFilePath()});
+                auto name = info.baseName();
+                if (!comment.isEmpty())
+                    name += " (" + comment + ")";
+                map.insert(name, info.absoluteFilePath());
             }
-
-            return map;
+            configMap.unite(map);
+            return map.keys();
         };
 
-        auto systemItem = new QTreeWidgetItem({"System"});
-        list->addTopLevelItem(systemItem);
-        static const QString systemPath ("/etc/shadowsocks");
-        auto systemConfigList = findConfig(systemPath);
-        for (const auto& key : systemConfigList)
-        {
-            systemItem->addChild(new QTreeWidgetItem({key.first}));
-        }
-        configList.insert(systemConfigList.cbegin(), systemConfigList.cend());
-        systemItem->setFlags(Qt::ItemIsEnabled);
-
-        auto userItem = new QTreeWidgetItem({"User"});
-        list->addTopLevelItem(userItem);
-        auto userFolder = QDir::home();
-        userFolder.cd(".shadowsocks");
-        static const QString userPath(userFolder.absolutePath());
-
-        auto userConfigList = findConfig(userPath);
-        for (const auto& key : userConfigList)
-        {
-            userItem->addChild(new QTreeWidgetItem({key.first}));
-        }
-        configList.insert(userConfigList.cbegin(), userConfigList.cend());
-        userItem->setFlags(Qt::ItemIsEnabled);
-
-        list->expandAll();
+        listWidget->addItems(findConfig(SSLPathHelper::systemPath(), "System"));
+        listWidget->addItems(findConfig(SSLPathHelper::userPath()));
     };
     connect(reloadButton, &QToolButton::clicked, reload);
 
@@ -83,43 +64,48 @@ SSLWidget::SSLWidget(QWidget* parent)
     startButton->setText("Start");
     startButton->setCheckable(true);
 
-    auto start = [list, reloadButton, startButton](bool state)
+    auto start = [this, listWidget](bool state)
     {
-        auto item = list->currentItem();
-        if(item == nullptr)
-            return;
-
-        auto key = item->text(0);
-        if(configList.find(key) == configList.cend())
-            return;
-
-        auto value = configList.at(key);
-
         if(state)
         {
-            controller.setConfig(value);
-            controller.start();
-
-            if(controller.started())
-            {
-                item->setIcon(0, QIcon(QApplication::style()->standardIcon(QStyle::SP_DialogYesButton)));
-                list->setEnabled(false);
-                reloadButton->setEnabled(false);
-                startButton->setText("Stop");
-            }
-            else
-                startButton->setChecked(false);
+            auto key = listWidget->currentItem()->text();
+            auto value = configMap.value(key);
+            p->controller.setConfig(value);
+            p->controller.start();
         }
         else
         {
-            controller.stop();
-            item->setIcon(0, QIcon());
-            list->setEnabled(true);
-            reloadButton->setEnabled(true);
-            startButton->setText("Start");
+            p->controller.stop();
         }
+
     };
     connect(startButton, &QPushButton::clicked, start);
+
+    auto stateChanged = [listWidget, reloadButton, startButton](SSLController::State state)
+    {
+        switch (state)
+        {
+        case SSLController::State::Starting:
+        case SSLController::State::Started:
+            {
+                listWidget->setEnabled(false);
+                reloadButton->setEnabled(false);
+                startButton->setText("Stop");
+                startButton->setChecked(true);
+                break;
+            }
+        case SSLController::State::Stopped:
+        default:
+            {
+                listWidget->setEnabled(true);
+                reloadButton->setEnabled(true);
+                startButton->setChecked(false);
+                startButton->setText("Start");
+                break;
+            }
+        }
+    };
+    connect(&p->controller, &SSLController::stateChanged, stateChanged);
 
     auto buttonLayout  = new QHBoxLayout;
     buttonLayout->setMargin(3);
@@ -130,10 +116,10 @@ SSLWidget::SSLWidget(QWidget* parent)
     auto layout = new QVBoxLayout;
     layout->setMargin(3);
     layout->setSpacing(3);
-    layout->addWidget(list);
+    layout->addWidget(listWidget);
     layout->addLayout(buttonLayout);
-
     setLayout(layout);
+
     reload();
 
     auto showAction = new QAction("Show window", this);
@@ -154,6 +140,11 @@ SSLWidget::SSLWidget(QWidget* parent)
     tray->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation)));
     tray->setContextMenu(menu);
     tray->show();
+}
+
+SSLWidget::~SSLWidget()
+{
+    delete p;
 }
 
 void SSLWidget::changeEvent(QEvent* event)

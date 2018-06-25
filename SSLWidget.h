@@ -6,9 +6,13 @@ class SSLWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SSLWidget(QWidget* parent = nullptr);
-    ~SSLWidget() = default;
+    explicit SSLWidget(QWidget *parent = nullptr);
+    ~SSLWidget();
+
+private:
+    class SSLWidgetPrivate;
+    SSLWidgetPrivate *p;
 
 protected:
-    void changeEvent(QEvent* event);
+    void changeEvent(QEvent *event);
 };
