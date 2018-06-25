@@ -127,6 +127,7 @@ SSLWidget::SSLWidget(QWidget *parent)
     {
         showNormal();
         setFocus();
+        raise();
     });
 
     auto quitAction = new QAction("Quit", this);
