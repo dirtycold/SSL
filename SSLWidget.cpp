@@ -165,7 +165,9 @@ SSLWidget::SSLWidget(QWidget *parent)
 #endif
 
     auto tray = new QSystemTrayIcon(this);
-    tray->setIcon(QIcon(":/icon/SSL.svg"));
+    QIcon icon (":/icon/SSL.svg");
+    icon.setIsMask(true);
+    tray->setIcon(icon);
     tray->setToolTip("SSL");
     tray->setContextMenu(menu);
     tray->show();
