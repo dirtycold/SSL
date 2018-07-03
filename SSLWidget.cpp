@@ -56,6 +56,8 @@ SSLWidget::SSLWidget(QWidget *parent)
 
         listWidget->addItems(findConfig(SSLPathHelper::systemPath(), "System"));
         listWidget->addItems(findConfig(SSLPathHelper::userPath()));
+        if (listWidget->count() != 0)
+            listWidget->setCurrentRow(0);
     };
     connect(reloadButton, &QToolButton::clicked, reload);
 
