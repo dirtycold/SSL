@@ -121,6 +121,18 @@ SSLWidget::SSLWidget(QWidget *parent)
 
     reload();
 
+    auto startAction = new QAction("Start", this);
+    connect(startAction, &QAction::triggered, [start]()
+    {
+        start(true);
+    });
+
+    auto stopAction = new QAction("Stop", this);
+    connect(stopAction, &QAction::triggered, [start]()
+    {
+        start(false);
+    });
+
     auto showAction = new QAction("Show window", this);
     connect(showAction, &QAction::triggered, [this]()
     {
@@ -133,6 +145,9 @@ SSLWidget::SSLWidget(QWidget *parent)
     connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
 
     auto menu = new QMenu(this);
+    menu->addAction(startAction);
+    menu->addAction(stopAction);
+    menu->addSeparator();
     menu->addAction(showAction);
     menu->addAction(quitAction);
 
