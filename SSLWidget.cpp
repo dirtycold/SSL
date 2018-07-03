@@ -26,6 +26,8 @@ class SSLWidget::SSLWidgetPrivate
 SSLWidget::SSLWidget(QWidget *parent)
     :QWidget(parent), p(new SSLWidgetPrivate)
 {
+    setWindowTitle("SSL");
+
     auto listWidget = new QListWidget;
     auto reloadButton = new QToolButton;
     reloadButton->setIcon(QIcon(":/icon/reload.svg"));
