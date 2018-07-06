@@ -155,15 +155,6 @@ SSLWidget::SSLWidget(QWidget *parent)
     menu->addAction(showAction);
     menu->addAction(quitAction);
 
-#if defined(Q_OS_MAC)
-    auto dockMenu = new QMenu(this);
-    dockMenu->addAction(startAction);
-    dockMenu->addAction(stopAction);
-    dockMenu->addSeparator();
-    dockMenu->addAction(showAction);
-    dockMenu->setAsDockMenu();
-#endif
-
     auto tray = new QSystemTrayIcon(this);
     QIcon icon (":/icon/SSL.svg");
     icon.setIsMask(true);
