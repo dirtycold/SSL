@@ -50,17 +50,19 @@ SSLController::State SSLController::state() const
 
 void SSLController::start()
 {
-    if (state() == Started)
-        stop();
+    if (state() != Stopped)
+    {
+        // stop();
+        p->proc.terminate();
+        p->proc.waitForFinished();
+    }
 
     p->proc.setArguments({"-c", p->config});
     p->proc.start();
-    // p->proc.waitForStarted();
 }
 
 void SSLController::stop()
 {
     p->proc.terminate();
-    // p->proc.waitForFinished();
 }
 
