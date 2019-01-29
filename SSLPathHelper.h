@@ -3,8 +3,8 @@
 #include <QString>
 #include <QDir>
 
-static const QString folder = QStringLiteral("shadowsocks");
-static const QString program = QStringLiteral("ss-local");
+static const QString folder = QStringLiteral("v2ray");
+static const QString program = QStringLiteral("v2ray");
 
 class SSLPathHelper
 {

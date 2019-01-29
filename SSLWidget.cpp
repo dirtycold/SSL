@@ -26,7 +26,7 @@ class SSLWidget::SSLWidgetPrivate
 SSLWidget::SSLWidget(QWidget *parent)
     :QWidget(parent), p(new SSLWidgetPrivate)
 {
-    setWindowTitle("SSL");
+    setWindowTitle("SVL");
 
     auto listWidget = new QListWidget;
     auto reloadButton = new QToolButton;
@@ -159,7 +159,7 @@ SSLWidget::SSLWidget(QWidget *parent)
     QIcon icon (":/icon/SSL.svg");
     icon.setIsMask(true);
     tray->setIcon(icon);
-    tray->setToolTip("SSL");
+    tray->setToolTip("SVL");
     tray->setContextMenu(menu);
     tray->show();
 }

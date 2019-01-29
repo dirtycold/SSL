@@ -57,7 +57,7 @@ void SSLController::start()
         p->proc.waitForFinished();
     }
 
-    p->proc.setArguments({"-c", p->config});
+    p->proc.setArguments({"--config=" + p->config});
     p->proc.start();
 }
 
